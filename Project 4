@@ -1,0 +1,37 @@
+Project 4
+The purpose of this project is to develop a data analysis program (matrix multiplication) using Apache Spark.
+
+/* Pratik Singh
+Cse 6331-004
+1001670417*/
+
+
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+
+object Multiply {
+  def main(args: Array[ String ]) {
+	val conf = new SparkConf().setAppName("Matrix Multiplication")
+	val sc = new SparkContext(conf)
+
+	val m_matrix = sc.textFile(args(0)).map(line => { 
+							val readLine = line.split(",")
+							(readLine(0).toInt, readLine(1).toInt, readLine(2).toDouble)
+						} )	
+
+	val n_matrix = sc.textFile(args(1)).map(line => { 
+							val readLine = line.split(",")
+							(readLine(0).toInt, readLine(1).toInt, readLine(2).toDouble)
+						} )
+
+	val multiply = m_matrix.map( m_matrix => (m_matrix._2, m_matrix)).join(n_matrix.map( n_matrix => (n_matrix._1,n_matrix)))
+									 .map{ case (k, (m_matrix,n_matrix)) => 
+										((m_matrix._1,n_matrix._2),(m_matrix._3 * n_matrix._3)) }
+
+	val reduceValues = multiply.reduceByKey((x,y) => (x+y))
+	val finalres = reduceValues.sortByKey()
+	finalres.saveAsTextFile(args(2))
+	sc.stop()
+	
+  }
+}
