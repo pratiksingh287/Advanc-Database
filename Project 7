@@ -1,0 +1,23 @@
+Project 7
+The purpose of this project is to develop a simple program for graph processing using Apache Hive.
+
+/* Pratik Singh
+Cse 6331-004
+1001670417*/
+
+drop table g1;
+drop table g2;
+
+create table g1(
+  x int,
+  y int)
+row format delimited fields terminated by ',' stored as textfile;
+
+create table g2(a int)
+row format delimited fields terminated by ',' stored as textfile;
+
+load data local inpath '${hiveconf:G}' overwrite into table g1;
+
+INSERT OVERWRITE TABLE g2
+SELECT COUNT(*) FROM g1 GROUP BY x;
+SELECT a, COUNT(*) FROM g2 GROUP BY a;
