@@ -1,0 +1,15 @@
+Project 6
+The purpose of this project is to develop a simple program for graph processing using Apache Pig.
+
+/* Pratik SIngh
+Cse 6331-004
+1001670417*/
+
+A= LOAD '$G' USING PigStorage(',') AS (x:int, y:int);
+B= group A by x;
+C= foreach B generate group,COUNT(A) as new;
+D = group C by new;
+Final= foreach D generate group,COUNT(C);
+STORE Final INTO '$O' USING PigStorage (',');
+
+
