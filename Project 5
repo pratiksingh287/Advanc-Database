@@ -1,0 +1,39 @@
+Project 5
+The purpose of this project is to develop a graph analysis program using Apache Spark.
+
+
+/* Pratik SIngh
+Cse 6331-004
+1001670417*/
+
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+  object Graph{
+    def main(args: Array[String]){
+      val conf = new SparkConf().setAppName("Assignment_5")
+      val sc = new SparkContext(conf)
+      
+
+       var graph = sc.textFile(args(0)).map( line => { val a = line.split(",")//.map(_.toLong)
+                                                      (a(0).toLong,a(0).toLong,a.drop(1).toList.map(_.toString).map(_.toLong)) })  
+                                                      
+       //graph.foreach(println)
+      var graph1 = graph.map(g => (g._1,g))
+      
+      graph1.foreach(println)
+      
+      for(i <- 1 to 5){
+
+         graph = graph.flatMap(
+         map => map match{ case (x, y, xy) => (x, y) :: xy.map(z => (z, y) ) } )
+        .reduceByKey((a, b) => (if (a >= b) b else a))
+        .join(graph1).map(g => (g._2._2._2, g._2._1, g._2._2._3))
+        //.collect()
+    }
+ val groupCount = graph.map(g => (g._2, 1))
+ .reduceByKey((m, n) => (m + n))
+ .sortBy(_._1)
+ .collect()
+ .foreach(println)
+ }
+}
